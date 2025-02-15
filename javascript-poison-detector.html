@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Injection Detection Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            text-align: center;
+            padding: 20px;
+            color: #4CAF50;
+        }
+
+        #injectForm {
+            width: 80%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        label {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+            margin-top: 10px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        p {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        p#message {
+            color: #4CAF50;
+        }
+
+        p#message.red {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h2>JavaScript Injection Detection Tool</h2>
+    <form id="injectForm">
+        <label for="userInput">Enter your script:</label><br>
+        <textarea id="userInput" name="userInput" rows="4" cols="50"></textarea><br><br>
+        <button type="button" onclick="checkForInjection()">Submit</button>
+    </form>
+    <p id="message"></p>
+
+    <script>
+        // Function to detect common JavaScript injection patterns
+        function checkForInjection() {
+            const userInput = document.getElementById("userInput").value;
+            const messageElement = document.getElementById("message");
+
+            // List of common malicious JavaScript patterns
+            const dangerousPatterns = [
+                /<script.*?>.*?<\/script>/i,  // Detect <script> tags
+                /javascript:/i,               // Detect javascript: pseudo protocol
+                /on\w+=".*?"/i,              // Detect event handlers like onclick, onmouseover, etc.
+                /eval\(.*?\)/i,              // Detect usage of eval function
+                /alert\(.*?\)/i,             // Detect alert() function
+                /document\.cookie/i,         // Detect attempts to manipulate cookies
+                /window\.location/i,         // Detect attempts to manipulate window location
+                /<img.*?onerror=.*?>/i       // Detect image tag with onerror attribute (XSS vector)
+            ];
+
+            // Check if any dangerous patterns are found in the user input
+            let isMalicious = dangerousPatterns.some(pattern => pattern.test(userInput));
+
+            if (isMalicious) {
+                messageElement.textContent = "Warning: Malicious JavaScript detected!";
+                messageElement.style.color = "red";
+                messageElement.classList.add('red');
+            } else {
+                messageElement.textContent = "No JavaScript injection detected. Input seems safe.";
+                messageElement.style.color = "green";
+                messageElement.classList.remove('red');
+            }
+        }
+    </script>
+</body>
+</html>
